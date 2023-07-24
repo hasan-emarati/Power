@@ -1,0 +1,47 @@
+/************  www.emic.ir  ************/
+
+#include <mega16a.h>
+#include <delay.h>
+#include <alcd.h>
+#include <stdio.h>             // sprintf »—«Ì «” ›«œÂ «“  «»⁄ stdio ›—«ŒÊ«‰Ì ò «»Œ«‰Â //
+#define ADC_VREF_TYPE ((0<<REFS1) | (0<<REFS0) | (0<<ADLAR))   /* «ÌÃ«œ „Ì ‘Ê‰œ adc òÂ  Ê”ÿ ŒÊœ òœÊÌé‰ »« ›⁄«·”«“Ì adc «“ Œÿ 7  « 16 œ” Ê—«  „—»Êÿ »Â */
+unsigned int read_adc(unsigned char adc_input)
+{
+ADMUX=adc_input | ADC_VREF_TYPE;
+delay_us(10);
+ADCSRA|=(1<<ADSC);
+while ((ADCSRA & (1<<ADIF))==0);
+ADCSRA|=(1<<ADIF);
+return ADCW;
+}
+
+void main(void)
+{
+ float i , volt , voltage ; 
+ unsigned char lcd[16];
+
+DDRA=(0<<DDA7) | (0<<DDA6) | (0<<DDA5) | (0<<DDA4) | (0<<DDA3) | (0<<DDA2) | (0<<DDA1) | (0<<DDA0);
+PORTA=(0<<PORTA7) | (0<<PORTA6) | (0<<PORTA5) | (0<<PORTA4) | (0<<PORTA3) | (0<<PORTA2) | (0<<PORTA1) | (0<<PORTA0);
+DDRC=(1<<DDC7) | (1<<DDC6) | (1<<DDC5) | (1<<DDC4) | (1<<DDC3) | (1<<DDC2) | (1<<DDC1) | (1<<DDC0);
+PORTC=(0<<PORTC7) | (0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (0<<PORTC3) | (0<<PORTC2) | (0<<PORTC1) | (0<<PORTC0);
+
+ADMUX=ADC_VREF_TYPE;              /* òÂ »«  ÊÃÂ »Â  ‰ŸÌ„«  „« œ— „ÕÌÿ òœÊÌ“«—œ «ÌÃ«œ „Ì ‘Ê‰œ adc «“ Œÿ 28  « 30 —ÃÌ” —Â«Ì „—»Êÿ »Â */
+ADCSRA=(1<<ADEN) | (0<<ADSC) | (0<<ADATE) | (0<<ADIF) | (0<<ADIE) | (1<<ADPS2) | (0<<ADPS1) | (1<<ADPS0);
+SFIOR=(0<<ADTS2) | (0<<ADTS1) | (0<<ADTS0);
+
+lcd_init(16);
+
+while (1)
+      {
+      i=read_adc(0);                // i ŒÊ«‰œ‰ ⁄œœÌ »Ì‰ 0  « 1023 òÂ ‰‘«‰ œÂ‰œÂ „ﬁœ«— Ê· «é «‰«·Êê —ÊÌ «‰ ÅÌ‰ „Ìò—Ê «”  Ê —ÌŒ ‰ «‰ œ— „ €Ì— //
+      volt=(i*5)/1023 ;             // œ” Ê— —Ê»—Ê ⁄œœ ŒÊ«‰œÂ ‘œÂ »Ì‰ 0  « 1023 —« œ— »«“Â Ì 0  « 5  »œÌ· „Ì ò‰œ //   
+       /* «“ «‰Ã«ÌÌ òÂ »«“Â Ì «‰œ«“Â êÌ—Ì Ê· «é „« »Ì‘ «“ 0  « 5 Ê·  «”  „« »« «” ›«œÂ «“  ﬁ”Ì„ „ﬁ«Ê„ Ì Ê· «é —« ò«Â‘ œ«œÂ «Ì„  « » Ê«‰Ì„ »—«Ì «‰œ«“Â êÌ—Ì »Â „Ìò—Ê »œÂÌ„ */
+      voltage=(volt*10)+volt ;         /*ÿ»ﬁ  Ê÷ÌÕ »«·« „« Ê· «éÌ —« òÂ ò«Â‘ œ«œÂ «Ì„ »« «” ›«œÂ «“ œ” Ê— —Ê»—Ê œÊ»«—Â »Â Õ«·  «Ê· »—„Ìê—œ«‰Ì„*/  
+      sprintf(lcd,"voltage=%2.2f",voltage);        // LCD »—«Ì ‰„«Ì‘ —ÊÌ lcd  »œÌ· „ﬁ«œÌ— Ê· «é »Â —‘ Â «Ì «“ ò«—«ò — Ê –ŒÌ—Â «‰ œ— „ €Ì— //
+      lcd_gotoxy(0,0);
+      lcd_puts(lcd);             // –ŒÌ—Â ‘œÂ «‰œ lcd ‰„«Ì‘ „ﬁ«œÌ— Ê· «é òÂ »Â ’Ê—  ò«—«ò — œ— „ €Ì— //
+      lcd_gotoxy(13,0);
+      lcd_putsf("V");            // »⁄œ «“ Ê· «é LCD —ÊÌ V ‰Ê‘ ‰ ò«—«ò — //
+      delay_ms(500);     
+      }
+}
