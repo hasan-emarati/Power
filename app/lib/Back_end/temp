@@ -1,0 +1,28 @@
+import serial.tools.list_ports
+import serial
+import time
+
+ports = serial.tools.list_ports.comports()
+serialInst = serial.Serial()
+
+PortsList = []
+
+for onePort in ports:
+    PortsList.append(str(onePort))
+    print(str(onePort))
+
+val = input("Select Port: COM")
+
+for x in range(0,len(PortsList)):
+    if PortsList[x].startswith("COM" + str(val)):
+        portVar = "COM" + str(val)
+        print(portVar)
+
+serialInst.baudrate = 1200
+serialInst.port = portVar
+serialInst.open()
+
+while True:
+	if serialInst.in_waiting:
+		packet = serialInst.readline()
+		print(packet.decode('ascii').rstrip('\r\n'))

@@ -1,0 +1,50 @@
+child: Expanded(
+                    child: ListView.builder(
+                      itemCount: 8,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color.fromARGB(200, 244, 67, 54),
+                                  Color.fromARGB(200, 233, 30, 98),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            height: 35,
+                            child: Row(
+                              children: [
+                                Center(
+                                  child: Text(
+                                    '   CUM ${(index + 1)}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 20,
+                                      fontFamily: 'avenir',
+                                      color: Color.fromARGB(232, 35, 0, 90),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 60,
+                                ),
+                                Checkbox(
+                                  value: isCheckbox,
+                                  onChanged: (bool? newBool) {
+                                    setState(
+                                      () {
+                                        isCheckbox = newBool;
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
